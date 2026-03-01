@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react"
 import { CharacterSelect } from "@/components/character-select"
 import { ModeSelect } from "@/components/mode-select"
+import { CinematicLoader } from "@/components/cinematic-loader"
 import { StatusBar } from "@/components/status-bar"
 import { Scanlines } from "@/components/scanlines"
 import { GridBackground } from "@/components/grid-background"
@@ -10,8 +11,10 @@ import { SoundToggle } from "@/components/sound-toggle"
 import { SoundProvider } from "@/hooks/use-sound"
 
 export default function Home() {
-  const [screen, setScreen] = useState<"character" | "mode">("character")
+  const [screen, setScreen] = useState<"character" | "mode" | "loading">("character")
   const [selectedRole, setSelectedRole] = useState<string>("")
+  const [selectedModeLabel, setSelectedModeLabel] = useState<string>("")
+  const [selectedModeId, setSelectedModeId] = useState<string>("")
   const [transitioning, setTransitioning] = useState(false)
 
   const handleRoleConfirmed = useCallback((role: string) => {
@@ -30,6 +33,29 @@ export default function Home() {
       setSelectedRole("")
       setTransitioning(false)
     }, 600)
+  }, [])
+
+  const handleModeConfirmed = useCallback((modeId: string, modeLabel: string) => {
+    setSelectedModeId(modeId)
+    setSelectedModeLabel(modeLabel)
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("loading")
+      setTransitioning(false)
+    }, 500)
+  }, [])
+
+  const handleLoadingComplete = useCallback(() => {
+    // After loading, navigate to the next page.
+    // For now this returns to mode select -- replace with your real
+    // destination route once the pages exist (e.g. router.push).
+    setTransitioning(true)
+    setTimeout(() => {
+      // Placeholder: go back to mode select.  Swap this for your
+      // actual navigation once the destination pages are built.
+      setScreen("mode")
+      setTransitioning(false)
+    }, 400)
   }, [])
 
   return (
@@ -60,10 +86,22 @@ export default function Home() {
         >
           {screen === "character" ? (
             <CharacterSelect onRoleConfirmed={handleRoleConfirmed} />
-          ) : (
-            <ModeSelect selectedRole={selectedRole} onBack={handleBack} />
-          )}
+          ) : screen === "mode" ? (
+            <ModeSelect
+              selectedRole={selectedRole}
+              onBack={handleBack}
+              onModeConfirmed={handleModeConfirmed}
+            />
+          ) : null}
         </div>
+
+        {/* Cinematic loading overlay */}
+        {screen === "loading" && (
+          <CinematicLoader
+            modeLabel={selectedModeLabel}
+            onComplete={handleLoadingComplete}
+          />
+        )}
 
         {/* Status bar */}
         <StatusBar />

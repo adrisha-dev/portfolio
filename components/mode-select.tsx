@@ -25,9 +25,10 @@ const modes = [
 interface ModeSelectProps {
   selectedRole: string
   onBack: () => void
+  onModeConfirmed?: (modeId: string, modeLabel: string) => void
 }
 
-export function ModeSelect({ selectedRole, onBack }: ModeSelectProps) {
+export function ModeSelect({ selectedRole, onBack, onModeConfirmed }: ModeSelectProps) {
   const [mounted, setMounted] = useState(false)
   const [selectedMode, setSelectedMode] = useState<string | null>(null)
   const { playClick, playTactical, playCombat } = useSound()
@@ -51,6 +52,15 @@ export function ModeSelect({ selectedRole, onBack }: ModeSelectProps) {
     playClick()
     onBack()
   }, [playClick, onBack])
+
+  const handleConfirm = useCallback(() => {
+    if (!selectedMode) return
+    playClick()
+    const mode = modes.find((m) => m.id === selectedMode)
+    if (mode && onModeConfirmed) {
+      onModeConfirmed(mode.id, mode.label)
+    }
+  }, [selectedMode, playClick, onModeConfirmed])
 
   useEffect(() => {
     const timer = setTimeout(() => setMounted(true), 50)
@@ -361,14 +371,36 @@ export function ModeSelect({ selectedRole, onBack }: ModeSelectProps) {
         </div>
       </div>
 
-      {/* Bottom instruction */}
-      <p
-        className={`relative z-10 font-mono text-[10px] uppercase tracking-[0.3em] transition-all duration-700 delay-700 ${
+      {/* Bottom instruction / Engage button */}
+      <div
+        className={`relative z-10 flex flex-col items-center gap-4 transition-all duration-700 delay-700 ${
           mounted ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-        } ${selectedMode ? "text-danger/50" : "text-muted-foreground/30"}`}
+        }`}
       >
-        {selectedMode ? "Mode locked -- standing by" : "Select a mode to proceed"}
-      </p>
+        {selectedMode ? (
+          <button
+            onClick={handleConfirm}
+            className="group relative cursor-pointer overflow-hidden rounded border border-danger/50 bg-danger/[0.08] px-10 py-3 font-mono text-xs uppercase tracking-[0.3em] text-danger transition-all duration-500 hover:border-danger/80 hover:bg-danger/[0.14] hover:shadow-[0_0_40px_-10px] hover:shadow-danger-glow/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label="Confirm mode selection and proceed"
+          >
+            {/* Subtle sweep highlight on hover */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-danger/10 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+            />
+            <span className="relative z-10">Engage</span>
+            {/* Corner brackets */}
+            <span className="absolute -left-px -top-px h-3 w-3 border-l border-t border-danger/60" />
+            <span className="absolute -right-px -top-px h-3 w-3 border-r border-t border-danger/60" />
+            <span className="absolute -bottom-px -left-px h-3 w-3 border-b border-l border-danger/60" />
+            <span className="absolute -bottom-px -right-px h-3 w-3 border-b border-r border-danger/60" />
+          </button>
+        ) : (
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/30">
+            Select a mode to proceed
+          </p>
+        )}
+      </div>
     </div>
   )
 }
