@@ -96,11 +96,50 @@
 }
 
 @keyframes cinematic-drift {
-  0%, 100% {
-    background-position: 0% 50%;
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 50%;
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 50% 100%;
+  }
+  75% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes cinematic-drift-alt {
+  0% {
+    background-position: 100% 100%;
+  }
+  33% {
+    background-position: 0% 50%;
+  }
+  66% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes cinematic-breathe {
+  0%, 100% {
+    opacity: var(--breathe-min, 0.04);
+    transform: scale(1) translate(0, 0);
+  }
+  30% {
+    opacity: var(--breathe-max, 0.09);
+    transform: scale(1.08) translate(2%, -1%);
+  }
+  60% {
+    opacity: var(--breathe-mid, 0.06);
+    transform: scale(1.03) translate(-1%, 2%);
   }
 }
 
@@ -123,18 +162,27 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0.25;
     transform: scale(1);
   }
   50% {
-    opacity: 0.6;
-    transform: scale(1.05);
+    opacity: 0.55;
+    transform: scale(1.06);
   }
 }
 
 .animate-cinematic-drift {
-  animation: cinematic-drift 12s ease-in-out infinite;
-  background-size: 200% 200%;
+  animation: cinematic-drift 30s ease-in-out infinite;
+  background-size: 300% 300%;
+}
+
+.animate-cinematic-drift-alt {
+  animation: cinematic-drift-alt 38s ease-in-out infinite;
+  background-size: 300% 300%;
+}
+
+.animate-cinematic-breathe {
+  animation: cinematic-breathe 20s ease-in-out infinite;
 }
 
 .animate-float-particle {
@@ -143,5 +191,5 @@
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
+  animation: pulse-glow 5s ease-in-out infinite;
 }

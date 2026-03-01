@@ -86,25 +86,56 @@ export function ModeSelect({ selectedRole, onBack }: ModeSelectProps) {
 
   return (
     <div className="flex flex-col items-center gap-14 md:gap-16">
-      {/* Cinematic animated gradient background */}
+      {/* === CINEMATIC BACKGROUND SYSTEM === */}
+
+      {/* Layer 1: Primary slow-moving deep red gradient */}
       <div
         aria-hidden="true"
         className="animate-cinematic-drift pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse at 30% 20%, rgba(120, 20, 20, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(100, 15, 15, 0.06) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(80, 10, 10, 0.04) 0%, transparent 70%)",
-          backgroundSize: "200% 200%",
+            "radial-gradient(ellipse 80% 60% at 20% 30%, rgba(120, 18, 18, 0.10) 0%, transparent 60%), radial-gradient(ellipse 70% 50% at 80% 70%, rgba(100, 12, 12, 0.08) 0%, transparent 55%)",
+          backgroundSize: "300% 300%",
+          filter: "blur(80px)",
         }}
       />
 
-      {/* Noise texture overlay */}
+      {/* Layer 2: Counter-moving secondary gradient for depth */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.025]"
+        className="animate-cinematic-drift-alt pointer-events-none fixed inset-0 z-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`,
+          background:
+            "radial-gradient(ellipse 60% 80% at 60% 20%, rgba(140, 20, 20, 0.06) 0%, transparent 50%), radial-gradient(ellipse 50% 70% at 30% 80%, rgba(90, 10, 10, 0.07) 0%, transparent 55%)",
+          backgroundSize: "300% 300%",
+          filter: "blur(100px)",
+          mixBlendMode: "screen",
+        }}
+      />
+
+      {/* Layer 3: Slow breathing ambient wash */}
+      <div
+        aria-hidden="true"
+        className="animate-cinematic-breathe pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 100% 80% at 50% 50%, rgba(110, 15, 15, 0.07) 0%, transparent 65%)",
+          filter: "blur(120px)",
+          ["--breathe-min" as string]: "0.04",
+          ["--breathe-max" as string]: "0.10",
+          ["--breathe-mid" as string]: "0.06",
+        }}
+      />
+
+      {/* Noise texture overlay for film grain */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`,
           backgroundRepeat: "repeat",
-          backgroundSize: "256px 256px",
+          backgroundSize: "512px 512px",
+          mixBlendMode: "overlay",
         }}
       />
 
@@ -185,14 +216,28 @@ export function ModeSelect({ selectedRole, onBack }: ModeSelectProps) {
 
       {/* Mode cards with red ambient glow behind */}
       <div className="relative z-10 w-full max-w-3xl px-4">
-        {/* Red ambient glow behind cards */}
+        {/* Red ambient glow behind cards - layered for depth */}
         <div
           aria-hidden="true"
           className="animate-pulse-glow pointer-events-none absolute inset-0 -z-10"
           style={{
-            background: "radial-gradient(ellipse at 50% 50%, rgba(150, 30, 30, 0.12) 0%, transparent 65%)",
-            filter: "blur(60px)",
-            transform: "scale(1.3)",
+            background:
+              "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(140, 25, 25, 0.14) 0%, rgba(100, 15, 15, 0.06) 40%, transparent 70%)",
+            filter: "blur(70px)",
+            transform: "scale(1.4) translateY(-5%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="animate-cinematic-breathe pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 55%, rgba(160, 30, 30, 0.08) 0%, transparent 55%)",
+            filter: "blur(50px)",
+            transform: "scale(1.2)",
+            ["--breathe-min" as string]: "0.3",
+            ["--breathe-max" as string]: "0.7",
+            ["--breathe-mid" as string]: "0.5",
           }}
         />
 
