@@ -20,7 +20,7 @@ interface SoundContextValue {
 
 const SoundContext = createContext<SoundContextValue | null>(null)
 
-const AMBIENT_VOLUME = 0.17
+const AMBIENT_VOLUME = 0.27
 const FADE_DURATION = 1200 // ms
 const FADE_STEPS = 30
 
@@ -42,17 +42,17 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     ambientRef.current = ambient
 
     const click = new Audio("/audio/ui-click.mp3")
-    click.volume = 0.35
+    click.volume = 0.5
     click.preload = "auto"
     clickRef.current = click
 
     const tactical = new Audio("/audio/tactical-select.mp3")
-    tactical.volume = 0.45
+    tactical.volume = 0.6
     tactical.preload = "auto"
     tacticalRef.current = tactical
 
     const combat = new Audio("/audio/combat-select.mp3")
-    combat.volume = 0.45
+    combat.volume = 0.6
     combat.preload = "auto"
     combatRef.current = combat
 
