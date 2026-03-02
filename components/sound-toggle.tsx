@@ -2,8 +2,20 @@
 
 import { useSound } from "@/hooks/use-sound"
 
-export function SoundToggle() {
+interface SoundToggleProps {
+  /** Override fixed positioning: "top-right" (default) or "top-left" (for tactical view) or "inline" (no fixed positioning) */
+  position?: "top-right" | "top-left" | "inline"
+}
+
+export function SoundToggle({ position = "top-right" }: SoundToggleProps) {
   const { enabled, toggle, playClick } = useSound()
+
+  const positionClasses =
+    position === "top-left"
+      ? ""
+      : position === "inline"
+        ? ""
+        : "fixed right-6 top-6 sm:right-10 sm:top-10"
 
   return (
     <button
@@ -11,7 +23,7 @@ export function SoundToggle() {
         playClick()
         toggle()
       }}
-      className={`group fixed right-6 top-6 z-50 flex cursor-pointer items-center gap-2.5 rounded border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] backdrop-blur-sm transition-all duration-500 sm:right-10 sm:top-10 ${
+      className={`group z-50 flex cursor-pointer items-center gap-2.5 rounded border px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] backdrop-blur-sm transition-all duration-500 ${positionClasses} ${
         enabled
           ? "border-primary/40 bg-primary/10 text-primary hover:border-primary/60 hover:bg-primary/15"
           : "border-border/40 bg-card/40 text-muted-foreground/50 hover:border-border/60 hover:text-muted-foreground/80"

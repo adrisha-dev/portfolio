@@ -75,8 +75,8 @@ export default function Home() {
         <GridBackground />
         <Scanlines />
 
-        {/* Sound toggle */}
-        <SoundToggle />
+        {/* Sound toggle (hidden in tactical view since it has its own) */}
+        {screen !== "tactical" && <SoundToggle />}
 
         {/* Radial vignette */}
         <div
