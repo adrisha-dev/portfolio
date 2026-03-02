@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Image from "next/image"
-import { User, Crosshair, FileText, Users, Radio } from "lucide-react"
+import { User, Crosshair, FileText, Users, Radio, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react"
 import { useSound } from "@/hooks/use-sound"
 import { SoundToggle } from "@/components/sound-toggle"
 import { TacticalHudFrame } from "@/components/tactical-hud-frame"
@@ -27,6 +27,9 @@ const MODULES: TacticalModule[] = [
 
 // Orbit radius scaled to ~65% from center; bumped up for larger avatar
 const ORBIT_RADIUS = 280
+
+// Module navigation order for left/right arrows
+const MODULE_ORDER = MODULES.map((m) => m.id)
 
 // ===================== CURSOR GLOW HOOK =====================
 
@@ -270,6 +273,8 @@ interface TacticalViewProps {
 export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
   const [mounted, setMounted] = useState(false)
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
+  const [activeModule, setActiveModule] = useState<string | null>(null)
+  const [moduleTransition, setModuleTransition] = useState(false)
   const { playClick } = useSound()
   const cursorGlowRef = useCursorGlow()
 
@@ -278,18 +283,59 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
     return () => clearTimeout(timer)
   }, [])
 
+  /** Transition into a module view */
+  const openModule = useCallback(
+    (moduleId: string) => {
+      if (activeModule === moduleId) return
+      playClick()
+      setModuleTransition(true)
+      setTimeout(() => {
+        setActiveModule(moduleId)
+        setTimeout(() => setModuleTransition(false), 60)
+      }, 400)
+    },
+    [playClick, activeModule]
+  )
+
+  /** Return to default hub */
+  const closeModule = useCallback(() => {
+    playClick()
+    setModuleTransition(true)
+    setTimeout(() => {
+      setActiveModule(null)
+      setTimeout(() => setModuleTransition(false), 60)
+    }, 400)
+  }, [playClick])
+
+  /** Navigate to prev/next module */
+  const navigateModule = useCallback(
+    (direction: -1 | 1) => {
+      if (!activeModule) return
+      const idx = MODULE_ORDER.indexOf(activeModule)
+      const nextIdx = (idx + direction + MODULE_ORDER.length) % MODULE_ORDER.length
+      openModule(MODULE_ORDER[nextIdx])
+    },
+    [activeModule, openModule]
+  )
+
   const handleIconClick = useCallback(
     (moduleId: string) => {
-      playClick()
-      // Placeholder: will navigate to module pages in a future step
+      openModule(moduleId)
     },
-    [playClick]
+    [openModule]
   )
 
   const handleBack = useCallback(() => {
-    playClick()
-    onBack?.()
-  }, [playClick, onBack])
+    if (activeModule) {
+      closeModule()
+    } else {
+      playClick()
+      onBack?.()
+    }
+  }, [playClick, onBack, activeModule, closeModule])
+
+  // Is a module panel currently active?
+  const isModuleActive = activeModule !== null
 
   return (
     <div
@@ -369,13 +415,13 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
       </div>
 
       {/* ========== BACK BUTTON (Below Sound Toggle) ========== */}
-      {onBack && (
+      {(onBack || isModuleActive) && (
         <button
           onClick={handleBack}
           className={`group fixed left-5 top-[68px] z-[95] flex cursor-pointer items-center gap-2 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground/40 transition-all duration-500 hover:text-danger/70 sm:left-8 sm:top-[72px] ${
             mounted ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
           }`}
-          aria-label="Go back to mode select"
+          aria-label={isModuleActive ? "Close module panel" : "Go back to mode select"}
         >
           <svg
             viewBox="0 0 16 16"
@@ -391,14 +437,14 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
               strokeLinejoin="round"
             />
           </svg>
-          <span>Back</span>
+          <span>{isModuleActive ? "Hub" : "Back"}</span>
         </button>
       )}
 
       {/* ========== IDENTITY HUD (Top-Right) ========== */}
       <div
         className={`fixed right-5 top-5 z-[95] transition-all duration-700 delay-300 sm:right-8 sm:top-7 ${
-          mounted ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+          mounted && !isModuleActive ? "translate-y-0 opacity-100" : !mounted ? "-translate-y-4 opacity-0" : "-translate-y-4 opacity-0 pointer-events-none"
         }`}
       >
         <TacticalHudFrame className="w-[260px] sm:w-[290px]" glowIntensity={0.5}>
@@ -458,14 +504,25 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
 
       {/* ========== CENTER STAGE ========== */}
       <div
-        className={`relative z-20 flex items-center justify-center transition-all duration-1000 ${
+        className={`relative z-20 flex items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
           mounted ? "scale-100 opacity-100" : "scale-[0.85] opacity-0"
         }`}
+        style={
+          isModuleActive
+            ? {
+                transform: "translateX(22%) scale(1.15)",
+                transition: "transform 1.2s cubic-bezier(0.25,0.1,0.25,1)",
+              }
+            : {
+                transform: "translateX(0) scale(1)",
+                transition: "transform 1.2s cubic-bezier(0.25,0.1,0.25,1)",
+              }
+        }
       >
         {/* Decorative HUD ring (slightly larger than icon orbit) */}
         <div
           aria-hidden="true"
-          className="animate-loader-spin-slow pointer-events-none absolute rounded-full"
+          className={`animate-loader-spin-slow pointer-events-none absolute rounded-full transition-opacity duration-700 ${isModuleActive ? "opacity-0" : "opacity-100"}`}
           style={{
             width: `${ORBIT_RADIUS * 2 + 100}px`,
             height: `${ORBIT_RADIUS * 2 + 100}px`,
@@ -475,7 +532,7 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
         />
         <div
           aria-hidden="true"
-          className="animate-loader-spin-reverse-slow pointer-events-none absolute rounded-full"
+          className={`animate-loader-spin-reverse-slow pointer-events-none absolute rounded-full transition-opacity duration-700 ${isModuleActive ? "opacity-0" : "opacity-100"}`}
           style={{
             width: `${ORBIT_RADIUS * 2 + 50}px`,
             height: `${ORBIT_RADIUS * 2 + 50}px`,
@@ -528,7 +585,7 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
             <div
               key={mod.id}
               className={`absolute z-30 transition-all duration-700 ${
-                mounted ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                mounted && !isModuleActive ? "scale-100 opacity-100" : !mounted ? "scale-75 opacity-0" : "scale-90 opacity-0 pointer-events-none"
               }`}
               style={{
                 // Offset by half the icon size (40px) so the icon center sits exactly on the orbit point
@@ -600,6 +657,130 @@ export function TacticalView({ selectedRole, onBack }: TacticalViewProps) {
           )
         })}
       </div>
+
+      {/* ========== MODULE PANEL (Left side) ========== */}
+      {isModuleActive && (
+        <div
+          className={`fixed left-0 top-0 z-[92] flex h-full w-full items-center justify-start pl-6 sm:pl-12 md:pl-16 transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${
+            moduleTransition ? "opacity-0 -translate-x-6" : "opacity-100 translate-x-0"
+          }`}
+        >
+          <div className="relative w-full max-w-lg">
+            {/* Angular HUD panel frame */}
+            <div
+              className="relative overflow-hidden border border-danger/25 bg-[#0a0a0f]/85 backdrop-blur-md"
+              style={{
+                clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
+              }}
+            >
+              {/* Corner accents */}
+              <div className="absolute left-0 top-0 h-8 w-px bg-gradient-to-b from-danger/60 to-transparent" />
+              <div className="absolute left-0 top-0 h-px w-8 bg-gradient-to-r from-danger/60 to-transparent" />
+              <div className="absolute bottom-0 right-0 h-8 w-px bg-gradient-to-t from-danger/60 to-transparent" />
+              <div className="absolute bottom-0 right-0 h-px w-8 bg-gradient-to-l from-danger/60 to-transparent" />
+              {/* Top accent line */}
+              <div className="absolute left-8 right-8 top-0 h-px bg-gradient-to-r from-transparent via-danger/20 to-transparent" />
+
+              {/* Panel inner glow */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background: "radial-gradient(ellipse 80% 60% at 70% 30%, rgba(180,40,40,0.04) 0%, transparent 70%)",
+                }}
+              />
+
+              <div className="relative px-7 py-7 sm:px-9 sm:py-8">
+                {/* ---- Agent Profile Content ---- */}
+                {activeModule === "profile" && (
+                  <div className="flex flex-col gap-5">
+                    {/* Header */}
+                    <div>
+                      <h2 className="font-mono text-lg font-bold uppercase tracking-[0.25em] text-foreground/90 sm:text-xl">
+                        Agent Profile
+                      </h2>
+                      <div className="mt-2.5 h-px w-full bg-gradient-to-r from-danger/40 via-danger/15 to-transparent" />
+                    </div>
+
+                    {/* Name */}
+                    <div>
+                      <h3 className="font-mono text-base font-semibold tracking-wide text-danger sm:text-lg">
+                        Adrisha Biswas
+                      </h3>
+                      <p className="mt-1 font-mono text-[10px] tracking-wider text-foreground/40 sm:text-[11px]">
+                        Frontend Developer | Community Builder | Learner
+                      </p>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px w-3/4 bg-gradient-to-r from-danger/20 to-transparent" />
+
+                    {/* Summary */}
+                    <p className="font-mono text-[11px] leading-relaxed tracking-wide text-foreground/50 sm:text-xs">
+                      First-year B.Tech student focused on frontend development, UI systems, and clean interface design. Actively involved in leading developer communities, managing events, and learning through hands-on projects and collaboration.
+                    </p>
+                  </div>
+                )}
+
+                {/* ---- Placeholder for other modules ---- */}
+                {activeModule && activeModule !== "profile" && (
+                  <div className="flex flex-col gap-5">
+                    <div>
+                      <h2 className="font-mono text-lg font-bold uppercase tracking-[0.25em] text-foreground/90 sm:text-xl">
+                        {MODULES.find((m) => m.id === activeModule)?.label ?? ""}
+                      </h2>
+                      <div className="mt-2.5 h-px w-full bg-gradient-to-r from-danger/40 via-danger/15 to-transparent" />
+                    </div>
+                    <p className="font-mono text-[11px] tracking-wide text-foreground/30 sm:text-xs">
+                      Module data loading...
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ---- Navigation Controls (below panel) ---- */}
+            <div className="mt-5 flex items-center justify-center gap-4">
+              {/* Back to hub */}
+              <button
+                onClick={closeModule}
+                className="group flex cursor-pointer items-center gap-2 border border-danger/15 bg-[#0a0a0f]/60 px-4 py-2.5 font-mono text-[9px] uppercase tracking-[0.25em] text-foreground/40 backdrop-blur-sm transition-all duration-400 hover:border-danger/30 hover:text-danger/60"
+                style={{
+                  clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
+                }}
+                aria-label="Back to tactical hub"
+              >
+                <ArrowLeft className="h-3 w-3 transition-transform duration-300 group-hover:-translate-x-0.5" />
+                <span>Back</span>
+              </button>
+
+              {/* Prev */}
+              <button
+                onClick={() => navigateModule(-1)}
+                className="group flex cursor-pointer items-center justify-center border border-danger/20 bg-[#0a0a0f]/60 p-2.5 backdrop-blur-sm transition-all duration-400 hover:border-danger/40 hover:bg-danger/[0.06]"
+                style={{
+                  clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                }}
+                aria-label="Previous module"
+              >
+                <ChevronLeft className="h-4 w-4 text-danger/40 transition-all duration-300 group-hover:text-danger/70 group-hover:-translate-x-0.5" />
+              </button>
+
+              {/* Next */}
+              <button
+                onClick={() => navigateModule(1)}
+                className="group flex cursor-pointer items-center justify-center border border-danger/20 bg-[#0a0a0f]/60 p-2.5 backdrop-blur-sm transition-all duration-400 hover:border-danger/40 hover:bg-danger/[0.06]"
+                style={{
+                  clipPath: "polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%)",
+                }}
+                aria-label="Next module"
+              >
+                <ChevronRight className="h-4 w-4 text-danger/40 transition-all duration-300 group-hover:text-danger/70 group-hover:translate-x-0.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========== BOTTOM VERSION TAG ========== */}
       <div
