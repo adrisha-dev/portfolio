@@ -407,10 +407,10 @@ export function MissionLog({ onPrev, onNext, onBack }: MissionLogProps) {
               src="/images/mission-avatar.png"
               alt="Operator side profile -- Mission Log view"
               fill
+              unoptimized
               className="object-contain drop-shadow-[0_0_90px_rgba(180,40,35,0.4)]"
               style={{ 
                 objectPosition: "center center",
-                background: "transparent",
               }}
               priority
             />
