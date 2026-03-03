@@ -7,6 +7,9 @@ import { CinematicLoader } from "@/components/cinematic-loader"
 import { TacticalView } from "@/components/tactical-view"
 import { AgentProfile } from "@/components/agent-profile"
 import { CoreAbilities } from "@/components/core-abilities"
+import { MissionLog } from "@/components/mission-log"
+import { SquadsAlliances } from "@/components/squads-alliances"
+import { ContactChannels } from "@/components/contact-channels"
 import { StatusBar } from "@/components/status-bar"
 import { Scanlines } from "@/components/scanlines"
 import { GridBackground } from "@/components/grid-background"
@@ -14,7 +17,7 @@ import { SoundToggle } from "@/components/sound-toggle"
 import { SoundProvider } from "@/hooks/use-sound"
 
 export default function Home() {
-  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile" | "abilities">("character")
+  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile" | "abilities" | "missions" | "alliances" | "contact">("character")
   const [selectedRole, setSelectedRole] = useState<string>("")
   const [selectedModeLabel, setSelectedModeLabel] = useState<string>("")
   const [selectedModeId, setSelectedModeId] = useState<string>("")
@@ -77,6 +80,12 @@ export default function Home() {
         setScreen("profile")
       } else if (moduleId === "abilities") {
         setScreen("abilities")
+      } else if (moduleId === "missions") {
+        setScreen("missions")
+      } else if (moduleId === "alliances" || moduleId === "squads") {
+        setScreen("alliances")
+      } else if (moduleId === "contact") {
+        setScreen("contact")
       }
       setTransitioning(false)
     }, 600)
@@ -106,7 +115,79 @@ export default function Home() {
     }, 600)
   }, [])
 
+  const handleAbilitiesNext = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("missions")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
   const handleAbilitiesBack = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("tactical")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleMissionsPrev = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("abilities")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleMissionsNext = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("alliances")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleMissionsBack = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("tactical")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleAlliancesPrev = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("missions")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleAlliancesNext = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("contact")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleAlliancesBack = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("tactical")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleContactPrev = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("alliances")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleContactBack = useCallback(() => {
     setTransitioning(true)
     setTimeout(() => {
       setScreen("tactical")
@@ -122,7 +203,7 @@ export default function Home() {
         <Scanlines />
 
         {/* Sound toggle (hidden in tactical view since it has its own) */}
-        {screen !== "tactical" && screen !== "profile" && screen !== "abilities" && <SoundToggle />}
+        {screen !== "tactical" && screen !== "profile" && screen !== "abilities" && screen !== "missions" && screen !== "alliances" && screen !== "contact" && <SoundToggle />}
 
         {/* Radial vignette */}
         <div
@@ -197,7 +278,52 @@ export default function Home() {
           >
             <CoreAbilities
               onPrev={handleAbilitiesPrev}
+              onNext={handleAbilitiesNext}
               onBack={handleAbilitiesBack}
+            />
+          </div>
+        )}
+
+        {/* Mission Log (full-screen, isolated) */}
+        {screen === "missions" && (
+          <div
+            className={`fixed inset-0 z-50 transition-opacity duration-700 ease-in-out ${
+              transitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <MissionLog
+              onPrev={handleMissionsPrev}
+              onNext={handleMissionsNext}
+              onBack={handleMissionsBack}
+            />
+          </div>
+        )}
+
+        {/* Squads & Alliances (full-screen, isolated) */}
+        {screen === "alliances" && (
+          <div
+            className={`fixed inset-0 z-50 transition-opacity duration-700 ease-in-out ${
+              transitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <SquadsAlliances
+              onPrev={handleAlliancesPrev}
+              onNext={handleAlliancesNext}
+              onBack={handleAlliancesBack}
+            />
+          </div>
+        )}
+
+        {/* Contact Channels (full-screen, isolated) */}
+        {screen === "contact" && (
+          <div
+            className={`fixed inset-0 z-50 transition-opacity duration-700 ease-in-out ${
+              transitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <ContactChannels
+              onPrev={handleContactPrev}
+              onBack={handleContactBack}
             />
           </div>
         )}
