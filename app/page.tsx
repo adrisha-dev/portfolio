@@ -10,6 +10,7 @@ import { CoreAbilities } from "@/components/core-abilities"
 import { MissionLog } from "@/components/mission-log"
 import { SquadsAlliances } from "@/components/squads-alliances"
 import { ContactChannels } from "@/components/contact-channels"
+import { BattleScreen } from "@/components/battle-screen"
 import { StatusBar } from "@/components/status-bar"
 import { Scanlines } from "@/components/scanlines"
 import { GridBackground } from "@/components/grid-background"
@@ -17,7 +18,7 @@ import { SoundToggle } from "@/components/sound-toggle"
 import { SoundProvider } from "@/hooks/use-sound"
 
 export default function Home() {
-  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile" | "abilities" | "missions" | "alliances" | "contact">("character")
+  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile" | "abilities" | "missions" | "alliances" | "contact" | "battle">("character")
   const [selectedRole, setSelectedRole] = useState<string>("")
   const [selectedModeLabel, setSelectedModeLabel] = useState<string>("")
   const [selectedModeId, setSelectedModeId] = useState<string>("")
@@ -57,6 +58,8 @@ export default function Home() {
     setTimeout(() => {
       if (selectedModeId === "tactical") {
         setScreen("tactical")
+      } else if (selectedModeId === "combat") {
+        setScreen("battle")
       } else {
         // Fallback: return to mode select for unbuilt modes
         setScreen("mode")
@@ -334,6 +337,17 @@ export default function Home() {
               onNext={handleContactNext}
               onBack={handleContactBack}
             />
+          </div>
+        )}
+
+        {/* Battle Screen (full-screen, FPS view) */}
+        {screen === "battle" && (
+          <div
+            className={`fixed inset-0 z-50 transition-opacity duration-700 ease-in-out ${
+              transitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <BattleScreen />
           </div>
         )}
 
