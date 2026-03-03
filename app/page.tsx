@@ -81,7 +81,7 @@ export default function Home() {
         setScreen("abilities")
       } else if (moduleId === "missions") {
         setScreen("missions")
-      } else if (moduleId === "alliances") {
+      } else if (moduleId === "alliances" || moduleId === "squads") {
         setScreen("alliances")
       }
       setTransitioning(false)
