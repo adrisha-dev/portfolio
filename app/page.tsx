@@ -6,6 +6,7 @@ import { ModeSelect } from "@/components/mode-select"
 import { CinematicLoader } from "@/components/cinematic-loader"
 import { TacticalView } from "@/components/tactical-view"
 import { AgentProfile } from "@/components/agent-profile"
+import { CoreAbilities } from "@/components/core-abilities"
 import { StatusBar } from "@/components/status-bar"
 import { Scanlines } from "@/components/scanlines"
 import { GridBackground } from "@/components/grid-background"
@@ -13,7 +14,7 @@ import { SoundToggle } from "@/components/sound-toggle"
 import { SoundProvider } from "@/hooks/use-sound"
 
 export default function Home() {
-  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile">("character")
+  const [screen, setScreen] = useState<"character" | "mode" | "loading" | "tactical" | "profile" | "abilities">("character")
   const [selectedRole, setSelectedRole] = useState<string>("")
   const [selectedModeLabel, setSelectedModeLabel] = useState<string>("")
   const [selectedModeId, setSelectedModeId] = useState<string>("")
@@ -74,13 +75,38 @@ export default function Home() {
     setTimeout(() => {
       if (moduleId === "profile") {
         setScreen("profile")
+      } else if (moduleId === "abilities") {
+        setScreen("abilities")
       }
-      // Future modules can be added here
       setTransitioning(false)
     }, 600)
   }, [])
 
   const handleProfileBack = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("tactical")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleProfileNext = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("abilities")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleAbilitiesPrev = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("profile")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
+  const handleAbilitiesBack = useCallback(() => {
     setTransitioning(true)
     setTimeout(() => {
       setScreen("tactical")
@@ -96,7 +122,7 @@ export default function Home() {
         <Scanlines />
 
         {/* Sound toggle (hidden in tactical view since it has its own) */}
-        {screen !== "tactical" && screen !== "profile" && <SoundToggle />}
+        {screen !== "tactical" && screen !== "profile" && screen !== "abilities" && <SoundToggle />}
 
         {/* Radial vignette */}
         <div
@@ -157,6 +183,21 @@ export default function Home() {
           >
             <AgentProfile
               onBack={handleProfileBack}
+              onNext={handleProfileNext}
+            />
+          </div>
+        )}
+
+        {/* Core Abilities (full-screen, isolated) */}
+        {screen === "abilities" && (
+          <div
+            className={`fixed inset-0 z-50 transition-opacity duration-700 ease-in-out ${
+              transitioning ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <CoreAbilities
+              onPrev={handleAbilitiesPrev}
+              onBack={handleAbilitiesBack}
             />
           </div>
         )}
