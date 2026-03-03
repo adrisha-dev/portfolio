@@ -5,139 +5,186 @@ import Image from "next/image"
 
 // ===================== AVATAR TARGET DATA =====================
 const AVATAR_TARGETS = [
-  { id: 1, src: "/images/avatar1.png", label: "SQUADS & ALLIANCES", left: "8%", bottom: "18%", scale: 1.85, height: "clamp(180px, 28vh, 320px)", z: 4 },
-  { id: 2, src: "/images/avatar2.png", label: "MISSIONS", left: "26%", bottom: "14%", scale: 2.15, height: "clamp(200px, 32vh, 360px)", z: 5 },
-  { id: 3, src: "/images/avatar3.png", label: "PROFILE", left: "50%", bottom: "18%", scale: 2.35, height: "clamp(220px, 35vh, 400px)", z: 6 },
-  { id: 4, src: "/images/avatar4.png", label: "CORE ABILITIES", left: "74%", bottom: "22%", scale: 1.95, height: "clamp(190px, 30vh, 340px)", z: 4 },
-  { id: 5, src: "/images/avatar5.png", label: "CONTACT", left: "92%", bottom: "18%", scale: 1.85, height: "clamp(190px, 30vh, 340px)", z: 4 },
+  { id: 1, src: "/images/avatar1.png", label: "SQUADS & ALLIANCES", left: "10%", bottom: "8%", scale: 2.4, height: "clamp(180px, 28vh, 320px)", z: 4 },
+  { id: 2, src: "/images/avatar2.png", label: "MISSIONS", left: "28%", bottom: "5%", scale: 2.8, height: "clamp(200px, 32vh, 360px)", z: 5 },
+  { id: 3, src: "/images/avatar3.png", label: "PROFILE", left: "50%", bottom: "10%", scale: 3.0, height: "clamp(220px, 35vh, 400px)", z: 6 },
+  { id: 4, src: "/images/avatar4.png", label: "CORE ABILITIES", left: "72%", bottom: "12%", scale: 2.5, height: "clamp(190px, 30vh, 340px)", z: 4 },
+  { id: 5, src: "/images/avatar5.png", label: "CONTACT", left: "90%", bottom: "8%", scale: 2.4, height: "clamp(190px, 30vh, 340px)", z: 4 },
 ]
 
-// ===================== RED AURA ENGINE =====================
-function RedAuraEngine({ scale }: { scale: number }) {
+// ===================== ENHANCED RED AURA ENGINE =====================
+function RedAuraEngine() {
   const sparks = useMemo(() => 
-    Array.from({ length: 12 }, (_, i) => ({
+    Array.from({ length: 16 }, (_, i) => ({
       id: i,
-      left: 20 + Math.random() * 60,
+      left: 15 + Math.random() * 70,
       delay: Math.random() * 4,
-      duration: 2.5 + Math.random() * 2,
-      size: 2 + Math.random() * 3,
+      duration: 2 + Math.random() * 2.5,
+      size: 3 + Math.random() * 4,
     })), []
   )
 
   return (
-    <div className="pointer-events-none absolute inset-0" style={{ transform: `scale(${1/scale})` }}>
-      {/* Outer soft glow */}
-      <div 
-        className="absolute inset-0 animate-pulse"
-        style={{
-          background: "radial-gradient(ellipse at center 70%, rgba(180,40,30,0.15) 0%, rgba(120,20,15,0.08) 40%, transparent 70%)",
-          filter: "blur(20px)",
-          animationDuration: "4s",
-        }}
-      />
-      {/* Inner edge glow */}
+    <div className="pointer-events-none absolute inset-0">
+      {/* Strong outer glow - increased blur by 40% */}
       <div 
         className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center 60%, rgba(220,60,40,0.12) 0%, transparent 50%)",
-          filter: "blur(8px)",
+          background: "radial-gradient(ellipse at center 70%, rgba(200,50,35,0.25) 0%, rgba(150,30,20,0.15) 40%, transparent 70%)",
+          filter: "blur(28px)",
+          animation: "aura-flicker 3s ease-in-out infinite",
         }}
       />
-      {/* Ember particles */}
+      {/* Inner rim light around silhouette */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center 55%, rgba(255,80,50,0.2) 0%, rgba(220,60,40,0.1) 30%, transparent 55%)",
+          filter: "blur(12px)",
+        }}
+      />
+      {/* Silhouette edge highlight */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center 50%, rgba(255,100,60,0.15) 0%, transparent 40%)",
+          filter: "blur(6px)",
+          animation: "edge-pulse 2.5s ease-in-out infinite",
+        }}
+      />
+      {/* Increased ember particles (30% more density) */}
       {sparks.map((spark) => (
         <div
           key={spark.id}
           className="absolute rounded-full"
           style={{
             left: `${spark.left}%`,
-            bottom: "10%",
+            bottom: "8%",
             width: spark.size,
             height: spark.size,
-            background: "radial-gradient(circle, rgba(255,120,60,0.9) 0%, rgba(200,50,30,0.4) 100%)",
-            boxShadow: "0 0 6px rgba(255,100,50,0.6)",
+            background: "radial-gradient(circle, rgba(255,140,70,1) 0%, rgba(220,60,30,0.5) 100%)",
+            boxShadow: "0 0 8px rgba(255,120,60,0.8), 0 0 16px rgba(255,80,40,0.4)",
             animation: `ember-rise ${spark.duration}s ease-out infinite`,
             animationDelay: `${spark.delay}s`,
           }}
         />
       ))}
-      {/* Heat shimmer at feet */}
+      {/* Stronger ground glow beneath feet */}
       <div
         className="absolute bottom-0 left-1/2 -translate-x-1/2"
         style={{
-          width: "80%",
-          height: "15%",
-          background: "linear-gradient(to top, rgba(180,50,30,0.1) 0%, transparent 100%)",
-          filter: "blur(4px)",
-          animation: "shimmer 3s ease-in-out infinite",
+          width: "100%",
+          height: "20%",
+          background: "radial-gradient(ellipse at center bottom, rgba(200,60,40,0.35) 0%, rgba(150,40,25,0.2) 40%, transparent 70%)",
+          filter: "blur(8px)",
+          animation: "ground-glow 4s ease-in-out infinite",
         }}
       />
     </div>
   )
 }
 
-// ===================== BLUE TARGET RIM =====================
-function BlueTargetRim({ scale }: { scale: number }) {
+// ===================== BLUE TARGET CROSS (CHEST LEVEL) =====================
+function BlueTargetCross() {
   return (
     <div 
-      className="pointer-events-none absolute left-1/2 -translate-x-1/2"
+      className="pointer-events-none absolute z-[3]"
       style={{ 
-        top: "8%",
-        width: "70%",
-        height: "35%",
-        transform: `translateX(-50%) scale(${1/scale})`,
+        top: "42%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
       }}
     >
-      {/* Upper arc rim */}
-      <svg viewBox="0 0 100 50" className="h-full w-full overflow-visible" style={{ animation: "rim-oscillate 6s ease-in-out infinite" }}>
-        <defs>
-          <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-        <path
-          d="M 10 45 Q 50 0 90 45"
-          fill="none"
-          stroke="rgba(0,191,255,0.5)"
-          strokeWidth="1.5"
-          filter="url(#blue-glow)"
-          style={{ animation: "rim-flicker 2s ease-in-out infinite" }}
-        />
-        <path
-          d="M 15 42 Q 50 5 85 42"
-          fill="none"
-          stroke="rgba(100,200,255,0.3)"
-          strokeWidth="0.8"
-          filter="url(#blue-glow)"
-        />
-      </svg>
+      {/* Faint circular halo behind cross */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: 48,
+          height: 48,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(0,191,255,0.12) 0%, rgba(0,150,200,0.06) 50%, transparent 70%)",
+          filter: "blur(6px)",
+          animation: "halo-pulse 3s ease-in-out infinite",
+        }}
+      />
+      {/* Center glow point */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(150,220,255,1) 0%, rgba(0,191,255,0.8) 60%, transparent 100%)",
+          boxShadow: "0 0 10px rgba(0,191,255,0.9), 0 0 20px rgba(0,191,255,0.6)",
+          animation: "cross-center-pulse 2s ease-in-out infinite",
+        }}
+      />
+      {/* Thin crosshair - horizontal */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: 28,
+          height: 1.5,
+          background: "linear-gradient(90deg, transparent 0%, rgba(0,191,255,0.7) 25%, rgba(100,220,255,1) 50%, rgba(0,191,255,0.7) 75%, transparent 100%)",
+          boxShadow: "0 0 6px rgba(0,191,255,0.7), 0 0 12px rgba(0,191,255,0.4)",
+          animation: "cross-flicker 2.5s ease-in-out infinite",
+        }}
+      />
+      {/* Thin crosshair - vertical */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: 1.5,
+          height: 28,
+          background: "linear-gradient(180deg, transparent 0%, rgba(0,191,255,0.7) 25%, rgba(100,220,255,1) 50%, rgba(0,191,255,0.7) 75%, transparent 100%)",
+          boxShadow: "0 0 6px rgba(0,191,255,0.7), 0 0 12px rgba(0,191,255,0.4)",
+          animation: "cross-flicker 2.5s ease-in-out infinite",
+          animationDelay: "0.3s",
+        }}
+      />
     </div>
   )
 }
 
-// ===================== BLUE TITLE LABEL =====================
-function BlueTitleLabel({ label, scale }: { label: string; scale: number }) {
+// ===================== HUD TITLE LABEL =====================
+function HudTitleLabel({ label }: { label: string }) {
   return (
     <div 
-      className="pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-center"
+      className="pointer-events-none absolute left-1/2 z-[4] whitespace-nowrap text-center"
       style={{ 
-        top: "-12%",
-        transform: `translateX(-50%) scale(${1/scale})`,
+        top: "-8%",
+        transform: "translateX(-50%)",
       }}
     >
-      <span
-        className="font-mono text-xs font-bold uppercase tracking-[0.2em]"
+      {/* Background strip */}
+      <div
+        className="relative overflow-hidden rounded-md px-3 py-1.5 sm:px-4 sm:py-2"
         style={{
-          color: "#00BFFF",
-          textShadow: "0 0 8px rgba(0,191,255,0.8), 0 0 16px rgba(0,191,255,0.5), 0 0 24px rgba(0,191,255,0.3)",
-          animation: "title-flicker 3s ease-in-out infinite",
+          background: "rgba(0,0,0,0.1)",
+          borderRadius: "6px",
         }}
       >
-        {label}
-      </span>
+        {/* Scanline shimmer effect */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(180deg, transparent 0%, rgba(0,191,255,0.03) 50%, transparent 100%)",
+            animation: "scanline-sweep 4s linear infinite",
+          }}
+        />
+        <span
+          className="relative font-mono font-bold uppercase"
+          style={{
+            fontSize: "clamp(12px, 1.2vw, 20px)",
+            letterSpacing: "2px",
+            color: "#00BFFF",
+            textShadow: "0 0 10px rgba(0,191,255,0.9), 0 0 20px rgba(0,191,255,0.6), 0 0 30px rgba(0,191,255,0.4)",
+            animation: "title-flicker 3s ease-in-out infinite",
+          }}
+        >
+          [ {label} ]
+        </span>
+      </div>
     </div>
   )
 }
@@ -153,6 +200,18 @@ function GunTipEnergyCross() {
         transform: "translateX(-50%)",
       }}
     >
+      {/* Outer bloom */}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(0,191,255,0.15) 0%, transparent 70%)",
+          filter: "blur(4px)",
+          animation: "bloom-pulse 2s ease-in-out infinite",
+        }}
+      />
       {/* Center glow point */}
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -188,18 +247,6 @@ function GunTipEnergyCross() {
           animationDelay: "0.5s",
         }}
       />
-      {/* Outer bloom */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(0,191,255,0.15) 0%, transparent 70%)",
-          filter: "blur(4px)",
-          animation: "bloom-pulse 2s ease-in-out infinite",
-        }}
-      />
     </div>
   )
 }
@@ -223,37 +270,49 @@ export function BattleScreen() {
       {/* CSS Animations */}
       <style jsx>{`
         @keyframes ember-rise {
-          0% { transform: translateY(0) scale(1); opacity: 0.8; }
+          0% { transform: translateY(0) scale(1); opacity: 0.9; }
           50% { opacity: 1; }
-          100% { transform: translateY(-120px) scale(0.3); opacity: 0; }
+          100% { transform: translateY(-140px) scale(0.2); opacity: 0; }
         }
-        @keyframes shimmer {
-          0%, 100% { opacity: 0.3; transform: translateX(-50%) scaleX(1); }
-          50% { opacity: 0.5; transform: translateX(-50%) scaleX(1.05); }
+        @keyframes aura-flicker {
+          0%, 100% { opacity: 0.8; }
+          25% { opacity: 1; }
+          50% { opacity: 0.7; }
+          75% { opacity: 0.95; }
         }
-        @keyframes rim-oscillate {
-          0%, 100% { transform: rotate(-2deg); }
-          50% { transform: rotate(2deg); }
-        }
-        @keyframes rim-flicker {
+        @keyframes edge-pulse {
           0%, 100% { opacity: 0.6; }
-          25% { opacity: 0.8; }
-          50% { opacity: 0.5; }
-          75% { opacity: 0.9; }
+          50% { opacity: 1; }
+        }
+        @keyframes ground-glow {
+          0%, 100% { opacity: 0.7; transform: translateX(-50%) scaleX(1); }
+          50% { opacity: 1; transform: translateX(-50%) scaleX(1.1); }
         }
         @keyframes title-flicker {
           0%, 100% { opacity: 0.9; }
           25% { opacity: 1; }
-          50% { opacity: 0.85; }
+          50% { opacity: 0.8; }
           75% { opacity: 0.95; }
         }
-        @keyframes energy-pulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
-          50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+        @keyframes scanline-sweep {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100%); }
         }
         @keyframes cross-flicker {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 1; }
+        }
+        @keyframes cross-center-pulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+          50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+        @keyframes halo-pulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+          50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.7; }
+        }
+        @keyframes energy-pulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+          50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
         }
         @keyframes bloom-pulse {
           0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
@@ -301,14 +360,14 @@ export function BattleScreen() {
             zIndex: avatar.z,
           }}
         >
-          {/* Red Aura Engine */}
-          <RedAuraEngine scale={avatar.scale} />
+          {/* Enhanced Red Aura Engine */}
+          <RedAuraEngine />
           
-          {/* Blue Target Rim */}
-          <BlueTargetRim scale={avatar.scale} />
+          {/* Blue Target Cross at chest level */}
+          <BlueTargetCross />
           
-          {/* Blue Title Label */}
-          <BlueTitleLabel label={avatar.label} scale={avatar.scale} />
+          {/* HUD Title Label anchored to head */}
+          <HudTitleLabel label={avatar.label} />
           
           {/* Avatar Image */}
           <Image
