@@ -47,9 +47,116 @@ export function BattleScreen() {
         }}
       />
 
+      {/* ============= AVATAR TARGETS ============= */}
+      
+      {/* Avatar 1 - Far Left */}
+      <div
+        className="pointer-events-none absolute z-[3]"
+        style={{
+          left: "12%",
+          bottom: "30%",
+          transform: "translateX(-50%) scale(0.85)",
+          height: "clamp(180px, 28vh, 320px)",
+          width: "auto",
+        }}
+      >
+        <Image
+          src="/images/avatar1.png"
+          alt="Target 1"
+          width={400}
+          height={600}
+          className="h-full w-auto object-contain"
+          unoptimized
+        />
+      </div>
+
+      {/* Avatar 2 - Front Left (closer to viewer) */}
+      <div
+        className="pointer-events-none absolute z-[4]"
+        style={{
+          left: "28%",
+          bottom: "24%",
+          transform: "translateX(-50%) scale(0.95)",
+          height: "clamp(200px, 32vh, 360px)",
+          width: "auto",
+        }}
+      >
+        <Image
+          src="/images/avatar2.png"
+          alt="Target 2"
+          width={400}
+          height={600}
+          className="h-full w-auto object-contain"
+          unoptimized
+        />
+      </div>
+
+      {/* Avatar 3 - Center (primary target) */}
+      <div
+        className="pointer-events-none absolute z-[5]"
+        style={{
+          left: "50%",
+          bottom: "30%",
+          transform: "translateX(-50%) scale(1.05)",
+          height: "clamp(220px, 35vh, 400px)",
+          width: "auto",
+        }}
+      >
+        <Image
+          src="/images/avatar3.png"
+          alt="Target 3 - Primary"
+          width={400}
+          height={600}
+          className="h-full w-auto object-contain"
+          unoptimized
+        />
+      </div>
+
+      {/* Avatar 4 - Mid Right (elevated depth) */}
+      <div
+        className="pointer-events-none absolute z-[3]"
+        style={{
+          left: "70%",
+          bottom: "36%",
+          transform: "translateX(-50%) scale(0.9)",
+          height: "clamp(190px, 30vh, 340px)",
+          width: "auto",
+        }}
+      >
+        <Image
+          src="/images/avatar4.png"
+          alt="Target 4"
+          width={400}
+          height={600}
+          className="h-full w-auto object-contain"
+          unoptimized
+        />
+      </div>
+
+      {/* Avatar 5 - Far Right */}
+      <div
+        className="pointer-events-none absolute z-[3]"
+        style={{
+          left: "88%",
+          bottom: "30%",
+          transform: "translateX(-50%) scale(0.9)",
+          height: "clamp(190px, 30vh, 340px)",
+          width: "auto",
+        }}
+      >
+        <Image
+          src="/images/avatar5.png"
+          alt="Target 5"
+          width={400}
+          height={600}
+          className="h-full w-auto object-contain"
+          unoptimized
+        />
+      </div>
+
       {/* ============= GUN OVERLAY ============= */}
       <div
-        className={`pointer-events-none fixed bottom-0 left-1/2 z-50 -translate-x-1/2 transition-opacity duration-500 ease-out ${
+        className={`pointer-events-none fixed bottom-0 left-1/2 z-[10] -translate-x-1/2 transition-opacity duration-500 ease-out ${
           gunVisible ? "opacity-100" : "opacity-0"
         }`}
         style={{
