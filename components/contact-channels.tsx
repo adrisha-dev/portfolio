@@ -264,11 +264,13 @@ function ContactItem({ icon, label, value, href, delay, mounted }: ContactItemPr
 interface ContactChannelsProps {
   /** Navigate to Squads & Alliances (left arrow) */
   onPrev?: () => void
+  /** Navigate to Profile (right arrow) */
+  onNext?: () => void
   /** Return to Tactical Hub */
   onBack?: () => void
 }
 
-export function ContactChannels({ onPrev, onBack }: ContactChannelsProps) {
+export function ContactChannels({ onPrev, onNext, onBack }: ContactChannelsProps) {
   const [mounted, setMounted] = useState(false)
   const { playClick } = useSound()
 
@@ -281,6 +283,11 @@ export function ContactChannels({ onPrev, onBack }: ContactChannelsProps) {
     playClick()
     onPrev?.()
   }, [playClick, onPrev])
+
+  const handleNext = useCallback(() => {
+    playClick()
+    onNext?.()
+  }, [playClick, onNext])
 
   const handleBack = useCallback(() => {
     playClick()
@@ -498,16 +505,16 @@ export function ContactChannels({ onPrev, onBack }: ContactChannelsProps) {
           <ChevronLeft className="h-5 w-5 text-danger/40 transition-all duration-300 group-hover:text-danger/70 group-hover:-translate-x-0.5" />
         </button>
 
-        {/* Right arrow -- disabled or loop to profile */}
+        {/* Right arrow -- to Profile */}
         <button
-          disabled
-          className="group flex cursor-not-allowed items-center justify-center border border-danger/10 bg-[#0a0a0f]/50 p-3 opacity-30 backdrop-blur-sm"
+          onClick={handleNext}
+          className="group flex cursor-pointer items-center justify-center border border-danger/20 bg-[#0a0a0f]/70 p-3 backdrop-blur-sm transition-all duration-400 hover:border-danger/40 hover:bg-danger/[0.06]"
           style={{
             clipPath: "polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)",
           }}
-          aria-label="End of navigation"
+          aria-label="Navigate to Profile"
         >
-          <ChevronRight className="h-5 w-5 text-danger/30" />
+          <ChevronRight className="h-5 w-5 text-danger/40 transition-all duration-300 group-hover:text-danger/70 group-hover:translate-x-0.5" />
         </button>
       </div>
 

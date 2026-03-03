@@ -187,6 +187,14 @@ export default function Home() {
     }, 600)
   }, [])
 
+  const handleContactNext = useCallback(() => {
+    setTransitioning(true)
+    setTimeout(() => {
+      setScreen("profile")
+      setTransitioning(false)
+    }, 600)
+  }, [])
+
   const handleContactBack = useCallback(() => {
     setTransitioning(true)
     setTimeout(() => {
@@ -323,6 +331,7 @@ export default function Home() {
           >
             <ContactChannels
               onPrev={handleContactPrev}
+              onNext={handleContactNext}
               onBack={handleContactBack}
             />
           </div>
